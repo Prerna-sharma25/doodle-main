@@ -21,6 +21,8 @@ app.secret_key = "any_secret_key_you_want"
 
 if not firebase_admin._apps:
     firebase_creds = os.getenv("FIREBASE_CREDENTIALS")
+    if not firebase_creds:
+        raise Exception("FIREBASE_CREDENTIALS environment variable not set in Render")
     cred_dict = json.loads(firebase_creds)
     cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred)
