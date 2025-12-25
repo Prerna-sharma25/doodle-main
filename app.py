@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, render_template, session, redirect, u
 from dotenv import load_dotenv
 from PIL import Image
 from functools import wraps
+import json
 
 # --- 1. FIREBASE IMPORTS ---
 import firebase_admin
@@ -19,8 +20,11 @@ app = Flask(__name__)
 app.secret_key = "any_secret_key_you_want" 
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("firebase_Key.json")
+    firebase_creds = os.getenv("FIREBASE_CREDENTIALS")
+    cred_dict = json.loads(firebase_creds)
+    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred)
+
 
 # --- 3. THE SECURITY GUARD (Authentication) ---
 def login_required(f):
