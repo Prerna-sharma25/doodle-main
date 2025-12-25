@@ -3,3 +3,4 @@ google-generativeai
 python-dotenv
 Pillow
 gunicorn
+firebase-admin
