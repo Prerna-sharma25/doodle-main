@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sketch Vision – Flask Edition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>Sketch Vision</h1>
+        <p>Your Imagination, AI’s Creation</p>
+    </header>
+
+    <main class="container">
+
+        <div class="column" id="input-column">
+            <h2>1. Create Your Sketch</h2>
+            <canvas id="sketch-canvas"></canvas>
+            <div class="canvas-controls">
+                <div>
+                    <label for="brush-size">Brush Size:</label>
+                    <input type="range" id="brush-size" min="1" max="20" value="3">
+                </div>
+                <button id="clear-canvas" class="button button-secondary">Clear</button>
+            </div>
+            
+            <h2>2. Describe Your Vision</h2>
+            <textarea id="text-prompt" placeholder="e.g., 'A photorealistic cat'"></textarea>
+        </div>
+
+        <div class="column" id="output-column">
+            <h2>3. See The AI's Creation</h2>
+            <button id="generate-button" class="button button-primary">
+                Generate Image
+            </button>
+
+            <div id="output-container">
+                <img id="output-image" src="https://placehold.co/512x512/333/666?text=Your+AI+creation+will+appear+here" alt="AI Generated Image">
+                <div id="loader" class="loader-overlay hidden">
+                    <div class="loader-spinner"></div>
+                </div>
+                <p id="error-message" class="error-text hidden"></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
+<div style="position: absolute; top: 20px; right: 20px;">
+    <a href="/logout" style="padding: 8px 16px; background: #7f5af0; color: white; text-decoration: none; border-radius: 5px;font-weight: bold;">Logout</a>
+</div>
+
+</body>
+</html>

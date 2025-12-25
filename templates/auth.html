@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Doodle App</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* Purple-Blue Gradient */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6a11cb;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #7a1fa2; /* Purple color from image */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 10px;
+            background-color: white;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .footer-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .footer-text span {
+            color: #7a1fa2;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2 id="form-title">Login</h2>
+        
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        
+        <button class="btn-login" onclick="handleAuth()" id="submit-btn">Login</button>
+        
+        <button class="btn-google" onclick="loginWithGoogle()">
+            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="18">
+            Continue with Google
+        </button>
+
+        <p class="footer-text" id="toggle-wrapper">
+            Don't have an account? <span onclick="toggleMode()">Sign up</span>
+        </p>
+    </div>
+
+    <script>
+        // --- PASTE YOUR FIREBASE CONFIG HERE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBiBgdqsYih41k-7kXKmgDadD4-VpZ6q4Q",
+            authDomain: "sketchvision-9adc2.firebaseapp.com",
+            projectId:"sketchvision-9adc2",
+            storageBucket:  "sketchvision-9adc2.firebasestorage.app",
+            messagingSenderId:  "1045756824765",
+            appId: "1:1045756824765:web:1f9295232286e5cba63bd4"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        let isLoginMode = true;
+
+        function toggleMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('form-title').innerText = isLoginMode ? "Login" : "Sign Up";
+            document.getElementById('submit-btn').innerText = isLoginMode ? "Login" : "Sign Up";
+            document.getElementById('toggle-wrapper').innerHTML = isLoginMode ? 
+                'Don\'t have an account? <span onclick="toggleMode()">Sign up</span>' : 
+                'Already have an account? <span onclick="toggleMode()">Login</span>';
+        }
+
+        async function sendTokenToBackend(user) {
+            const idToken = await user.getIdToken();
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idToken: idToken })
+            });
+            if (response.ok) window.location.href = "/";
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                let result;
+                if (isLoginMode) {
+                    result = await firebase.auth().signInWithEmailAndPassword(email, password);
+                } else {
+                    result = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                }
+                await sendTokenToBackend(result.user);
+            } catch (error) { alert(error.message); }
+        }
+
+        async function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await firebase.auth().signInWithPopup(provider);
+                await sendTokenToBackend(result.user);
+            } catch (error) { alert(error.message); }
+        }
+    </script>
+</body>
+</html>
